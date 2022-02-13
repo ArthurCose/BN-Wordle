@@ -93,6 +93,20 @@ function internalGenerateWordShapes(word) {
     });
   };
 
+  function hasSameColorNeighbor(shape, x, y) {
+    function hasSameColor(x, y) {
+      const s = shapes.find((shape) => shape.existsAt(x, y));
+      return s && s != shape && s.color == shape.color;
+    }
+
+    return (
+      hasSameColor(x - 1, y) ||
+      hasSameColor(x + 1, y) ||
+      hasSameColor(x, y - 1) ||
+      hasSameColor(x, y + 1)
+    );
+  }
+
   while (nextRun.length > 0) {
     const run = nextRun;
     nextRun = [];
@@ -107,11 +121,18 @@ function internalGenerateWordShapes(word) {
       if (otherShape) continue;
 
       const growShape = () => {
-        // spread
-        if (shape.countBlocks() < MAX_SHAPE_SIZE && shape.canSet(x, y)) {
-          shape.set(x, y, true);
-          spread({ shape, x, y });
+        // spread if we can, or drop this search
+
+        if (hasSameColorNeighbor(shape, x, y)) {
+          return;
         }
+
+        if (shape.countBlocks() >= MAX_SHAPE_SIZE || !shape.canSet(x, y)) {
+          return;
+        }
+
+        shape.set(x, y, true);
+        spread({ shape, x, y });
       };
 
       const tryLater = () => {

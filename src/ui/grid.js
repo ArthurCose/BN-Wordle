@@ -32,6 +32,36 @@ export default class Grid {
     this.#selectedShape = shape;
   }
 
+  #hasSameColorNeighbor(shape, x, y) {
+    const hasSameColor = (x, y) => {
+      const s = this.getShape(x, y);
+      return s && s != shape && s.color == shape.color;
+    };
+
+    return (
+      hasSameColor(x - 1, y) ||
+      hasSameColor(x + 1, y) ||
+      hasSameColor(x, y - 1) ||
+      hasSameColor(x, y + 1)
+    );
+  }
+
+  isValid() {
+    for (let y = 0; y < GRID_BLOCK_SIDE_LEN; y++) {
+      for (let x = 0; x < GRID_BLOCK_SIDE_LEN; x++) {
+        const shape = this.getShape(x, y);
+
+        if (!shape) continue;
+
+        if (this.#hasSameColorNeighbor(shape, x, y)) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
   #grabShape() {
     const shape = this.getShape(this.cursorPos.x, this.cursorPos.y);
 

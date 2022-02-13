@@ -13,6 +13,7 @@ export default class RunLine {
   #grid;
   #word;
   #builtWord;
+  #validGrid;
 
   constructor(grid, word) {
     this.#grid = grid;
@@ -34,6 +35,18 @@ export default class RunLine {
     this.#progress = 0;
   }
 
+  #reviewGrid() {
+    this.#builtWord = "";
+
+    for (let i = 0; i < GRID_BLOCK_SIDE_LEN; i++) {
+      const shape = this.#grid.getShape(i, GRID_BLOCK_CENTER);
+
+      this.#builtWord += shape ? shape.letter : "?";
+    }
+
+    this.#validGrid = this.#grid.isValid();
+  }
+
   update(inputManager, delta) {
     this.#progress = Math.min(1, this.#progress + delta / 2);
 
@@ -45,13 +58,7 @@ export default class RunLine {
     }
 
     if (!this.#builtWord && this.#progress == 1) {
-      this.#builtWord = "";
-
-      for (let i = 0; i < GRID_BLOCK_SIDE_LEN; i++) {
-        const shape = this.#grid.getShape(i, GRID_BLOCK_CENTER);
-
-        this.#builtWord += shape ? shape.letter : "?";
-      }
+      this.#reviewGrid();
     }
   }
 
@@ -89,10 +96,12 @@ export default class RunLine {
 
     ctx.fill();
 
-    if (this.#progress == 1) {
-      ctx.fillStyle = this.#builtWord == this.#word ? "lime" : "red";
-    } else {
+    if (this.#progress < 1) {
       ctx.fillStyle = "black";
+    } else if (this.#builtWord == this.#word) {
+      ctx.fillStyle = this.#validGrid ? "lime" : "orange";
+    } else {
+      ctx.fillStyle = "red";
     }
 
     for (let i = 0; i < GRID_BLOCK_SIDE_LEN * this.#progress - 0.5; i++) {
