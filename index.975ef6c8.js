@@ -675,6 +675,21 @@ class Grid {
     selectShape(shape) {
         this.#selectedShape = shape;
     }
+     #hasSameColorNeighbor(shape, x, y) {
+        const hasSameColor = (x1, y1)=>{
+            const s = this.getShape(x1, y1);
+            return s && s != shape && s.color == shape.color;
+        };
+        return hasSameColor(x - 1, y) || hasSameColor(x + 1, y) || hasSameColor(x, y - 1) || hasSameColor(x, y + 1);
+    }
+    isValid() {
+        for(let y2 = 0; y2 < _sharedConstants.GRID_BLOCK_SIDE_LEN; y2++)for(let x2 = 0; x2 < _sharedConstants.GRID_BLOCK_SIDE_LEN; x2++){
+            const shape1 = this.getShape(x2, y2);
+            if (!shape1) continue;
+            if (this.#hasSameColorNeighbor(shape1, x2, y2)) return false;
+        }
+        return true;
+    }
      #grabShape() {
         const shape = this.getShape(this.cursorPos.x, this.cursorPos.y);
         if (!shape) return null;
@@ -713,8 +728,8 @@ class Grid {
         this.#selectedShape = null;
         return true;
     }
-    getShape(x, y) {
-        return this.#shapes.find((shape)=>shape.existsAt(x, y)
+    getShape(x3, y3) {
+        return this.#shapes.find((shape2)=>shape2.existsAt(x3, y3)
         );
     }
     giveFocus() {
@@ -747,11 +762,11 @@ class Grid {
             this.#keepSelectedShapeInBounds();
             if (inputManager.justPressed(_inputManager.InputEnum.A)) this.#placeSelectedShape();
             else if (inputManager.justPressed(_inputManager.InputEnum.B)) {
-                const shape = this.#selectedShape;
+                const shape3 = this.#selectedShape;
                 this.#selectedShape = null;
-                this.#shapes = this.#shapes.filter((s)=>s != shape
+                this.#shapes = this.#shapes.filter((s)=>s != shape3
                 );
-                this.onReturnShape(shape);
+                this.onReturnShape(shape3);
             }
         } else {
             if (inputManager.justPressed(_inputManager.InputEnum.A)) this.#grabShape();
@@ -766,16 +781,16 @@ class Grid {
         ctx.fillStyle = "#124D7F";
         ctx.fillRect(_sharedConstants.GRID_RENDER_OFFSET_X, _sharedConstants.GRID_RENDER_OFFSET_Y, _sharedConstants.GRID_RENDER_SIDE_LEN, _sharedConstants.GRID_RENDER_SIDE_LEN);
         // blocks
-        for(let x = 0; x < _sharedConstants.GRID_BLOCK_SIDE_LEN; x++)for(let y = 0; y < _sharedConstants.GRID_BLOCK_SIDE_LEN; y++){
-            const shape = this.getShape(x, y);
-            if (shape) {
-                ctx.fillStyle = shape.color;
-                ctx.fillRect(_sharedConstants.GRID_RENDER_OFFSET_X + _sharedConstants.BLOCK_RENDER_SIDE_LEN * x, _sharedConstants.GRID_RENDER_OFFSET_Y + _sharedConstants.BLOCK_RENDER_SIDE_LEN * y, _sharedConstants.BLOCK_RENDER_SIDE_LEN, _sharedConstants.BLOCK_RENDER_SIDE_LEN);
+        for(let x4 = 0; x4 < _sharedConstants.GRID_BLOCK_SIDE_LEN; x4++)for(let y4 = 0; y4 < _sharedConstants.GRID_BLOCK_SIDE_LEN; y4++){
+            const shape4 = this.getShape(x4, y4);
+            if (shape4) {
+                ctx.fillStyle = shape4.color;
+                ctx.fillRect(_sharedConstants.GRID_RENDER_OFFSET_X + _sharedConstants.BLOCK_RENDER_SIDE_LEN * x4, _sharedConstants.GRID_RENDER_OFFSET_Y + _sharedConstants.BLOCK_RENDER_SIDE_LEN * y4, _sharedConstants.BLOCK_RENDER_SIDE_LEN, _sharedConstants.BLOCK_RENDER_SIDE_LEN);
             }
-            if (this.#selectedShape && this.#selectedShape.existsAt(x, y)) {
+            if (this.#selectedShape && this.#selectedShape.existsAt(x4, y4)) {
                 ctx.globalAlpha = 0.75;
                 ctx.fillStyle = this.#selectedShape.color;
-                ctx.fillRect(_sharedConstants.GRID_RENDER_OFFSET_X + _sharedConstants.BLOCK_RENDER_SIDE_LEN * x, _sharedConstants.GRID_RENDER_OFFSET_Y + _sharedConstants.BLOCK_RENDER_SIDE_LEN * y, _sharedConstants.BLOCK_RENDER_SIDE_LEN, _sharedConstants.BLOCK_RENDER_SIDE_LEN);
+                ctx.fillRect(_sharedConstants.GRID_RENDER_OFFSET_X + _sharedConstants.BLOCK_RENDER_SIDE_LEN * x4, _sharedConstants.GRID_RENDER_OFFSET_Y + _sharedConstants.BLOCK_RENDER_SIDE_LEN * y4, _sharedConstants.BLOCK_RENDER_SIDE_LEN, _sharedConstants.BLOCK_RENDER_SIDE_LEN);
                 ctx.globalAlpha = 1;
             }
         }
@@ -793,13 +808,13 @@ class Grid {
         ctx.fill();
         // draw cursor
         if (this.#hasFocus) {
-            const { x , y  } = this.cursorPos;
+            const { x: x5 , y: y5  } = this.cursorPos;
             ctx.strokeStyle = "#E02828";
-            ctx.strokeRect(_sharedConstants.GRID_RENDER_OFFSET_X + _sharedConstants.BLOCK_RENDER_SIDE_LEN * x + 0.5, _sharedConstants.GRID_RENDER_OFFSET_Y + _sharedConstants.BLOCK_RENDER_SIDE_LEN * y + 0.5, _sharedConstants.BLOCK_RENDER_SIDE_LEN - 1, _sharedConstants.BLOCK_RENDER_SIDE_LEN - 1);
-            const shape = this.getShape(x, y);
-            if (!this.#selectedShape && shape) {
+            ctx.strokeRect(_sharedConstants.GRID_RENDER_OFFSET_X + _sharedConstants.BLOCK_RENDER_SIDE_LEN * x5 + 0.5, _sharedConstants.GRID_RENDER_OFFSET_Y + _sharedConstants.BLOCK_RENDER_SIDE_LEN * y5 + 0.5, _sharedConstants.BLOCK_RENDER_SIDE_LEN - 1, _sharedConstants.BLOCK_RENDER_SIDE_LEN - 1);
+            const shape5 = this.getShape(x5, y5);
+            if (!this.#selectedShape && shape5) {
                 ctx.font = "16px bn6-bold";
-                ctx.fillText(shape.letter, _sharedConstants.GRID_RENDER_OFFSET_X + _sharedConstants.BLOCK_RENDER_SIDE_LEN * x + 6, _sharedConstants.GRID_RENDER_OFFSET_Y + _sharedConstants.BLOCK_RENDER_SIDE_LEN * y + 3);
+                ctx.fillText(shape5.letter, _sharedConstants.GRID_RENDER_OFFSET_X + _sharedConstants.BLOCK_RENDER_SIDE_LEN * x5 + 6, _sharedConstants.GRID_RENDER_OFFSET_Y + _sharedConstants.BLOCK_RENDER_SIDE_LEN * y5 + 3);
             }
         }
     }
@@ -1128,29 +1143,37 @@ function internalGenerateWordShapes(word) {
             y: y + 1
         });
     };
+    function hasSameColorNeighbor(shape1, x1, y1) {
+        function hasSameColor(x, y) {
+            const s = shapes.find((shape)=>shape.existsAt(x, y)
+            );
+            return s && s != shape1 && s.color == shape1.color;
+        }
+        return hasSameColor(x1 - 1, y1) || hasSameColor(x1 + 1, y1) || hasSameColor(x1, y1 - 1) || hasSameColor(x1, y1 + 1);
+    }
     while(nextRun.length > 0){
         const run = nextRun;
         nextRun = [];
-        for (const { shape: shape1 , x , y  } of run){
+        for (const { shape: shape2 , x , y  } of run){
             if (x < 0 || y < 0 || x >= GRID_SIDE_LEN || y >= GRID_SIDE_LEN) continue;
             const otherShape = shapes.find((shape)=>shape.existsAt(x, y)
             );
             if (otherShape) continue;
             const growShape = ()=>{
-                // spread
-                if (shape1.countBlocks() < MAX_SHAPE_SIZE && shape1.canSet(x, y)) {
-                    shape1.set(x, y, true);
-                    spread({
-                        shape: shape1,
-                        x,
-                        y
-                    });
-                }
+                // spread if we can, or drop this search
+                if (hasSameColorNeighbor(shape2, x, y)) return;
+                if (shape2.countBlocks() >= MAX_SHAPE_SIZE || !shape2.canSet(x, y)) return;
+                shape2.set(x, y, true);
+                spread({
+                    shape: shape2,
+                    x,
+                    y
+                });
             };
             const tryLater = ()=>{
                 // do nothing, but try again next run
                 nextRun.push({
-                    shape: shape1,
+                    shape: shape2,
                     x,
                     y
                 });
@@ -1169,7 +1192,7 @@ function generateWordShapes(word) {
     do shapes = internalGenerateWordShapes(word);
     while (shapes.filter((shape)=>shape.isColumn()
     ).length > 1)
-    for (const shape3 of shapes)shape3.recalculateCenter();
+    for (const shape4 of shapes)shape4.recalculateCenter();
     return shapes;
 }
 function generateFillerShapes(word) {
@@ -1452,6 +1475,7 @@ class RunLine {
     #grid;
     #word;
     #builtWord;
+    #validGrid;
     constructor(grid, word){
         this.#grid = grid;
     }
@@ -1469,18 +1493,20 @@ class RunLine {
     removeFocus() {
         this.#progress = 0;
     }
+     #reviewGrid() {
+        this.#builtWord = "";
+        for(let i = 0; i < _sharedConstants.GRID_BLOCK_SIDE_LEN; i++){
+            const shape = this.#grid.getShape(i, _sharedConstants.GRID_BLOCK_CENTER);
+            this.#builtWord += shape ? shape.letter : "?";
+        }
+        this.#validGrid = this.#grid.isValid();
+    }
     update(inputManager, delta) {
         this.#progress = Math.min(1, this.#progress + delta / 2);
         const accept = inputManager.justPressed(_inputManager.InputEnum.A);
         const cancel = inputManager.justPressed(_inputManager.InputEnum.B);
         if ((accept || cancel) && this.#progress == 1) this.onExit();
-        if (!this.#builtWord && this.#progress == 1) {
-            this.#builtWord = "";
-            for(let i = 0; i < _sharedConstants.GRID_BLOCK_SIDE_LEN; i++){
-                const shape = this.#grid.getShape(i, _sharedConstants.GRID_BLOCK_CENTER);
-                this.#builtWord += shape ? shape.letter : "?";
-            }
-        }
+        if (!this.#builtWord && this.#progress == 1) this.#reviewGrid();
     }
     render(ctx) {
         ctx.fillStyle = "#ffff0066";
@@ -1495,8 +1521,9 @@ class RunLine {
         ctx.lineTo(_sharedConstants.GRID_RENDER_OFFSET_X + progressWidth, _sharedConstants.GRID_RENDER_OFFSET_Y + _sharedConstants.BLOCK_RENDER_SIDE_LEN * 3);
         ctx.lineTo(_sharedConstants.GRID_RENDER_OFFSET_X, _sharedConstants.GRID_RENDER_OFFSET_Y + _sharedConstants.BLOCK_RENDER_SIDE_LEN * 3);
         ctx.fill();
-        if (this.#progress == 1) ctx.fillStyle = this.#builtWord == this.#word ? "lime" : "red";
-        else ctx.fillStyle = "black";
+        if (this.#progress < 1) ctx.fillStyle = "black";
+        else if (this.#builtWord == this.#word) ctx.fillStyle = this.#validGrid ? "lime" : "orange";
+        else ctx.fillStyle = "red";
         for(let i = 0; i < _sharedConstants.GRID_BLOCK_SIDE_LEN * this.#progress - 0.5; i++){
             const shape = this.#grid.getShape(i, _sharedConstants.GRID_BLOCK_CENTER);
             ctx.font = "16px bn6-bold";
