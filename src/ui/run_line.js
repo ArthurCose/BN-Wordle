@@ -62,8 +62,7 @@ export default class RunLine {
     }
   }
 
-  render(ctx) {
-    ctx.fillStyle = "#ffff0066";
+  #renderLine(ctx) {
     ctx.beginPath();
 
     const progressWidth = GRID_RENDER_SIDE_LEN * this.#progress;
@@ -95,6 +94,31 @@ export default class RunLine {
     );
 
     ctx.fill();
+  }
+
+  #renderText(ctx, offsetX, offsetY) {
+    for (let i = 0; i < GRID_BLOCK_SIDE_LEN * this.#progress - 0.5; i++) {
+      const shape = this.#grid.getShape(i, GRID_BLOCK_CENTER);
+
+      ctx.font = "16px bn6-bold";
+      ctx.fillText(
+        shape ? shape.letter : "?",
+        GRID_RENDER_OFFSET_X + BLOCK_RENDER_SIDE_LEN * i + 6 + offsetX,
+        GRID_RENDER_OFFSET_Y +
+          BLOCK_RENDER_SIDE_LEN * GRID_BLOCK_CENTER +
+          3 +
+          offsetY
+      );
+    }
+  }
+
+  render(ctx) {
+    ctx.fillStyle = "#ffff0066";
+
+    this.#renderLine(ctx);
+
+    // text shadow
+    this.#renderText(ctx, 1, 1);
 
     if (this.#progress < 1) {
       ctx.fillStyle = "black";
@@ -104,15 +128,6 @@ export default class RunLine {
       ctx.fillStyle = "red";
     }
 
-    for (let i = 0; i < GRID_BLOCK_SIDE_LEN * this.#progress - 0.5; i++) {
-      const shape = this.#grid.getShape(i, GRID_BLOCK_CENTER);
-
-      ctx.font = "16px bn6-bold";
-      ctx.fillText(
-        shape ? shape.letter : "?",
-        GRID_RENDER_OFFSET_X + BLOCK_RENDER_SIDE_LEN * i + 6,
-        GRID_RENDER_OFFSET_Y + BLOCK_RENDER_SIDE_LEN * GRID_BLOCK_CENTER + 3
-      );
-    }
+    this.#renderText(ctx, 0, 0);
   }
 }
