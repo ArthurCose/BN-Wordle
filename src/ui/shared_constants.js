@@ -1,3 +1,6 @@
+export const GAME_WIDTH = 240;
+export const GAME_HEIGHT = 160;
+
 export const BLOCK_RENDER_SIDE_LEN = 20;
 
 export const GRID_BLOCK_SIDE_LEN = 5;

@@ -1,7 +1,8 @@
 import Grid from "./grid";
 import Inventory from "./inventory";
 import RunLine from "./run_line";
-import { GRID_BLOCK_SIDE_LEN } from "./shared_constants";
+import Buttons from "./buttons";
+import { GRID_BLOCK_SIDE_LEN, GAME_HEIGHT } from "./shared_constants";
 import { InputManager } from "../input_manager";
 import { randomItem } from "../random";
 import { generateWordShapes } from "../generation";
@@ -11,11 +12,14 @@ import arrayShuffle from "array-shuffle";
 export default class Game {
   #inventory = new Inventory();
   #grid = new Grid();
-  #inputManager = new InputManager();
   #runLine = new RunLine(this.#grid);
+  #buttons;
   #focusedUI = this.#inventory;
+  #inputManager = new InputManager();
 
-  constructor() {
+  constructor(canvas) {
+    this.#buttons = new Buttons(canvas, this.#inputManager);
+
     const word = randomItem(WORDS);
 
     this.#runLine.setWord(word);
@@ -70,11 +74,27 @@ export default class Game {
   update(delta) {
     this.#focusedUI.update(this.#inputManager, delta);
     this.#inputManager.flush();
+    this.#buttons.update();
+  }
+
+  #isLandscape() {
+    if (window.innerHeight < window.innerWidth) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   render(canvas, ctx) {
+    if (this.#isLandscape()) {
+      canvas.height = GAME_HEIGHT;
+    } else {
+      canvas.height = GAME_HEIGHT * 2;
+      this.#buttons.render(ctx);
+    }
+
     ctx.fillStyle = "orange";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, canvas.width, GAME_HEIGHT);
 
     this.#grid.render(ctx);
     this.#inventory.render(ctx);

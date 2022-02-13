@@ -8,6 +8,7 @@ export const InputEnum = {
   START: 6,
   L: 7,
   R: 8,
+  SIZE: 9,
 };
 
 const KeyboardBinding = {
@@ -33,12 +34,8 @@ export class InputManager {
       const input = KeyboardBinding[e.code];
 
       if (input != undefined) {
-        if (this.#held[input]) {
-          this.#repeated[input] = true;
-        } else {
-          this.#pressed[input] = true;
-          this.#held[input] = true;
-        }
+        this.simulateRepeat(input);
+        this.simulatePress(input);
       }
     });
 
@@ -46,10 +43,30 @@ export class InputManager {
       const input = KeyboardBinding[e.code];
 
       if (input != undefined) {
-        this.#released[input] = true;
-        this.#held[input] = false;
+        this.simulateRelease(input);
       }
     });
+  }
+
+  simulatePress(input) {
+    if (!this.#held[input]) {
+      this.#pressed[input] = true;
+      this.#held[input] = true;
+    }
+  }
+
+  simulateRepeat(input) {
+    // todo, handle using counters
+    if (this.#held[input]) {
+      this.#repeated[input] = true;
+    }
+  }
+
+  simulateRelease(input) {
+    if (input != undefined && this.#held[input]) {
+      this.#released[input] = true;
+      this.#held[input] = false;
+    }
   }
 
   justPressed(input) {

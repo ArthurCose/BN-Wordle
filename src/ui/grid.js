@@ -311,6 +311,7 @@ export default class Grid {
 
       if (!this.#selectedShape && shape) {
         ctx.font = "16px bn6-bold";
+        ctx.textBaseline = "top";
         ctx.fillText(
           shape.letter,
           GRID_RENDER_OFFSET_X + BLOCK_RENDER_SIDE_LEN * x + 6,

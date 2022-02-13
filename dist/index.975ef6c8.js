@@ -524,7 +524,7 @@ var _game = require("./ui/game");
 var _gameDefault = parcelHelpers.interopDefault(_game);
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
-const game = new _gameDefault.default();
+const game = new _gameDefault.default(canvas);
 let previousTime;
 function gameLoop(time) {
     if (previousTime == undefined) {
@@ -581,6 +581,8 @@ var _inventory = require("./inventory");
 var _inventoryDefault = parcelHelpers.interopDefault(_inventory);
 var _runLine = require("./run_line");
 var _runLineDefault = parcelHelpers.interopDefault(_runLine);
+var _buttons = require("./buttons");
+var _buttonsDefault = parcelHelpers.interopDefault(_buttons);
 var _sharedConstants = require("./shared_constants");
 var _inputManager = require("../input_manager");
 var _random = require("../random");
@@ -592,10 +594,12 @@ var _arrayShuffleDefault = parcelHelpers.interopDefault(_arrayShuffle);
 class Game {
     #inventory = new _inventoryDefault.default();
     #grid = new _gridDefault.default();
-    #inputManager = new _inputManager.InputManager();
     #runLine = new _runLineDefault.default(this.#grid);
+    #buttons;
     #focusedUI = this.#inventory;
-    constructor(){
+    #inputManager = new _inputManager.InputManager();
+    constructor(canvas){
+        this.#buttons = new _buttonsDefault.default(canvas, this.#inputManager);
         const word = _random.randomItem(_wordsDefault.default);
         this.#runLine.setWord(word);
         this.#inventory.setShapes(_arrayShuffleDefault.default(_generation.generateWordShapes(word)));
@@ -639,10 +643,20 @@ class Game {
     update(delta) {
         this.#focusedUI.update(this.#inputManager, delta);
         this.#inputManager.flush();
+        this.#buttons.update();
+    }
+     #isLandscape() {
+        if (window.innerHeight < window.innerWidth) return true;
+        else return false;
     }
     render(canvas, ctx) {
+        if (this.#isLandscape()) canvas.height = _sharedConstants.GAME_HEIGHT;
+        else {
+            canvas.height = _sharedConstants.GAME_HEIGHT * 2;
+            this.#buttons.render(ctx);
+        }
         ctx.fillStyle = "orange";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(0, 0, canvas.width, _sharedConstants.GAME_HEIGHT);
         this.#grid.render(ctx);
         this.#inventory.render(ctx);
         this.#runLine.render(ctx);
@@ -650,7 +664,7 @@ class Game {
 }
 exports.default = Game;
 
-},{"./grid":"9trj0","./inventory":"eQQVx","./shared_constants":"ldZyS","../input_manager":"Oqiei","../random":"1fE0k","../generation":"g07oX","../words":"gEDpQ","array-shuffle":"jrjcr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./run_line":"6xrmZ"}],"9trj0":[function(require,module,exports) {
+},{"./grid":"9trj0","./inventory":"eQQVx","./shared_constants":"ldZyS","../random":"1fE0k","../generation":"g07oX","../words":"gEDpQ","array-shuffle":"jrjcr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./run_line":"6xrmZ","../input_manager":"Oqiei","./buttons":"2XU1p"}],"9trj0":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _inputManager = require("../input_manager");
@@ -814,6 +828,7 @@ class Grid {
             const shape5 = this.getShape(x5, y5);
             if (!this.#selectedShape && shape5) {
                 ctx.font = "16px bn6-bold";
+                ctx.textBaseline = "top";
                 ctx.fillText(shape5.letter, _sharedConstants.GRID_RENDER_OFFSET_X + _sharedConstants.BLOCK_RENDER_SIDE_LEN * x5 + 6, _sharedConstants.GRID_RENDER_OFFSET_Y + _sharedConstants.BLOCK_RENDER_SIDE_LEN * y5 + 3);
             }
         }
@@ -821,7 +836,47 @@ class Grid {
 }
 exports.default = Grid;
 
-},{"../input_manager":"Oqiei","./shared_constants":"ldZyS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"Oqiei":[function(require,module,exports) {
+},{"./shared_constants":"ldZyS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../input_manager":"Oqiei"}],"ldZyS":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "GAME_WIDTH", ()=>GAME_WIDTH
+);
+parcelHelpers.export(exports, "GAME_HEIGHT", ()=>GAME_HEIGHT
+);
+parcelHelpers.export(exports, "BLOCK_RENDER_SIDE_LEN", ()=>BLOCK_RENDER_SIDE_LEN
+);
+parcelHelpers.export(exports, "GRID_BLOCK_SIDE_LEN", ()=>GRID_BLOCK_SIDE_LEN
+);
+parcelHelpers.export(exports, "GRID_BLOCK_CENTER", ()=>GRID_BLOCK_CENTER
+);
+parcelHelpers.export(exports, "GRID_RENDER_SIDE_LEN", ()=>GRID_RENDER_SIDE_LEN
+);
+parcelHelpers.export(exports, "GRID_RENDER_OFFSET_X", ()=>GRID_RENDER_OFFSET_X
+);
+parcelHelpers.export(exports, "GRID_RENDER_OFFSET_Y", ()=>GRID_RENDER_OFFSET_Y
+);
+parcelHelpers.export(exports, "INVENTORY_OFFSET_X", ()=>INVENTORY_OFFSET_X
+);
+parcelHelpers.export(exports, "INVENTORY_OFFSET_Y", ()=>INVENTORY_OFFSET_Y
+);
+parcelHelpers.export(exports, "BORDER_COLOR", ()=>BORDER_COLOR
+);
+parcelHelpers.export(exports, "GRID_BACKGROUND_COLOR", ()=>GRID_BACKGROUND_COLOR
+);
+const GAME_WIDTH = 240;
+const GAME_HEIGHT = 160;
+const BLOCK_RENDER_SIDE_LEN = 20;
+const GRID_BLOCK_SIDE_LEN = 5;
+const GRID_BLOCK_CENTER = Math.floor(GRID_BLOCK_SIDE_LEN / 2);
+const GRID_RENDER_SIDE_LEN = GRID_BLOCK_SIDE_LEN * BLOCK_RENDER_SIDE_LEN;
+const GRID_RENDER_OFFSET_X = BLOCK_RENDER_SIDE_LEN;
+const GRID_RENDER_OFFSET_Y = BLOCK_RENDER_SIDE_LEN * 1.5;
+const INVENTORY_OFFSET_X = GRID_RENDER_OFFSET_X + GRID_RENDER_SIDE_LEN + BLOCK_RENDER_SIDE_LEN;
+const INVENTORY_OFFSET_Y = GRID_RENDER_OFFSET_Y;
+const BORDER_COLOR = "#889EB3";
+const GRID_BACKGROUND_COLOR = "#124D7F";
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"Oqiei":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "InputEnum", ()=>InputEnum
@@ -837,7 +892,8 @@ const InputEnum = {
     B: 5,
     START: 6,
     L: 7,
-    R: 8
+    R: 8,
+    SIZE: 9
 };
 const KeyboardBinding = {
     ArrowUp: InputEnum.UP,
@@ -859,20 +915,30 @@ class InputManager {
         document.addEventListener("keydown", (e)=>{
             const input = KeyboardBinding[e.code];
             if (input != undefined) {
-                if (this.#held[input]) this.#repeated[input] = true;
-                else {
-                    this.#pressed[input] = true;
-                    this.#held[input] = true;
-                }
+                this.simulateRepeat(input);
+                this.simulatePress(input);
             }
         });
         document.addEventListener("keyup", (e)=>{
             const input = KeyboardBinding[e.code];
-            if (input != undefined) {
-                this.#released[input] = true;
-                this.#held[input] = false;
-            }
+            if (input != undefined) this.simulateRelease(input);
         });
+    }
+    simulatePress(input) {
+        if (!this.#held[input]) {
+            this.#pressed[input] = true;
+            this.#held[input] = true;
+        }
+    }
+    simulateRepeat(input) {
+        // todo, handle using counters
+        if (this.#held[input]) this.#repeated[input] = true;
+    }
+    simulateRelease(input) {
+        if (input != undefined && this.#held[input]) {
+            this.#released[input] = true;
+            this.#held[input] = false;
+        }
     }
     justPressed(input) {
         return this.#pressed[input] == true;
@@ -892,40 +958,6 @@ class InputManager {
         this.#repeated = [];
     }
 }
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"ldZyS":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "BLOCK_RENDER_SIDE_LEN", ()=>BLOCK_RENDER_SIDE_LEN
-);
-parcelHelpers.export(exports, "GRID_BLOCK_SIDE_LEN", ()=>GRID_BLOCK_SIDE_LEN
-);
-parcelHelpers.export(exports, "GRID_BLOCK_CENTER", ()=>GRID_BLOCK_CENTER
-);
-parcelHelpers.export(exports, "GRID_RENDER_SIDE_LEN", ()=>GRID_RENDER_SIDE_LEN
-);
-parcelHelpers.export(exports, "GRID_RENDER_OFFSET_X", ()=>GRID_RENDER_OFFSET_X
-);
-parcelHelpers.export(exports, "GRID_RENDER_OFFSET_Y", ()=>GRID_RENDER_OFFSET_Y
-);
-parcelHelpers.export(exports, "INVENTORY_OFFSET_X", ()=>INVENTORY_OFFSET_X
-);
-parcelHelpers.export(exports, "INVENTORY_OFFSET_Y", ()=>INVENTORY_OFFSET_Y
-);
-parcelHelpers.export(exports, "BORDER_COLOR", ()=>BORDER_COLOR
-);
-parcelHelpers.export(exports, "GRID_BACKGROUND_COLOR", ()=>GRID_BACKGROUND_COLOR
-);
-const BLOCK_RENDER_SIDE_LEN = 20;
-const GRID_BLOCK_SIDE_LEN = 5;
-const GRID_BLOCK_CENTER = Math.floor(GRID_BLOCK_SIDE_LEN / 2);
-const GRID_RENDER_SIDE_LEN = GRID_BLOCK_SIDE_LEN * BLOCK_RENDER_SIDE_LEN;
-const GRID_RENDER_OFFSET_X = BLOCK_RENDER_SIDE_LEN;
-const GRID_RENDER_OFFSET_Y = BLOCK_RENDER_SIDE_LEN * 1.5;
-const INVENTORY_OFFSET_X = GRID_RENDER_OFFSET_X + GRID_RENDER_SIDE_LEN + BLOCK_RENDER_SIDE_LEN;
-const INVENTORY_OFFSET_Y = GRID_RENDER_OFFSET_Y;
-const BORDER_COLOR = "#889EB3";
-const GRID_BACKGROUND_COLOR = "#124D7F";
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"eQQVx":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
@@ -1038,7 +1070,7 @@ class Inventory {
 }
 exports.default = Inventory;
 
-},{"./shared_constants":"ldZyS","../input_manager":"Oqiei","../random":"1fE0k","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1fE0k":[function(require,module,exports) {
+},{"./shared_constants":"ldZyS","../random":"1fE0k","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../input_manager":"Oqiei"}],"1fE0k":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 // [0, n)
@@ -1541,6 +1573,116 @@ class RunLine {
 }
 exports.default = RunLine;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./shared_constants":"ldZyS","../input_manager":"Oqiei"}]},["7nZVA","8lqZg"], "8lqZg", "parcelRequire7258")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./shared_constants":"ldZyS","../input_manager":"Oqiei"}],"2XU1p":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _sharedConstants = require("./shared_constants");
+var _inputManager = require("../input_manager");
+const BUTTON_SIZE = 24;
+class Buttons {
+    #buttons = [
+        {
+            binding: _inputManager.InputEnum.L,
+            x: 0,
+            y: 1,
+            w: 2,
+            h: 1
+        },
+        {
+            binding: _inputManager.InputEnum.R,
+            x: _sharedConstants.GAME_WIDTH / BUTTON_SIZE - 2,
+            y: 1,
+            w: 2,
+            h: 1
+        },
+        {
+            binding: _inputManager.InputEnum.LEFT,
+            x: 1,
+            y: 4,
+            w: 1,
+            h: 1
+        },
+        {
+            binding: _inputManager.InputEnum.RIGHT,
+            x: 3,
+            y: 4,
+            w: 1,
+            h: 1
+        },
+        {
+            binding: _inputManager.InputEnum.UP,
+            x: 2,
+            y: 3,
+            w: 1,
+            h: 1
+        },
+        {
+            binding: _inputManager.InputEnum.DOWN,
+            x: 2,
+            y: 5,
+            w: 1,
+            h: 1
+        },
+        {
+            binding: _inputManager.InputEnum.A,
+            x: _sharedConstants.GAME_WIDTH / BUTTON_SIZE - 3,
+            y: 3,
+            w: 1,
+            h: 1
+        },
+        {
+            binding: _inputManager.InputEnum.B,
+            x: _sharedConstants.GAME_WIDTH / BUTTON_SIZE - 4,
+            y: 4,
+            w: 1,
+            h: 1
+        }, 
+    ];
+    #canvas;
+    #state = [];
+    #inputManager;
+    constructor(canvas, inputManager){
+        this.#canvas = canvas;
+        this.#inputManager = inputManager;
+        canvas.addEventListener("touchstart", (e)=>{
+            this.#updateFromTouchEvent(e);
+        });
+        canvas.addEventListener("touchmove", (e)=>{
+            this.#updateFromTouchEvent(e);
+        });
+        canvas.addEventListener("touchend", (e)=>{
+            this.#updateFromTouchEvent(e);
+        });
+    }
+     #updateFromTouchEvent(event) {
+        const canvas = this.#canvas;
+        const canvasRect = canvas.getBoundingClientRect();
+        const newState = [];
+        for (const touch of event.targetTouches){
+            // get corrected canvas position
+            let x = (touch.clientX - canvasRect.x) / canvasRect.width * canvas.width;
+            let y = (touch.clientY - canvasRect.y) / canvasRect.height * canvas.height;
+            // transform position to button space
+            x = x / BUTTON_SIZE;
+            y = (y - _sharedConstants.GAME_HEIGHT) / BUTTON_SIZE;
+            for (const button of this.#buttons)if (x > button.x && y > button.y && x < button.x + button.w && y < button.y + button.h) newState[button.binding] = true;
+        }
+        for(let i = 0; i < _inputManager.InputEnum.SIZE; i++){
+            if (this.#state[i] && !newState[i]) this.#inputManager.simulateRelease(i);
+            else if (!this.#state[i] && newState[i]) this.#inputManager.simulatePress(i);
+        }
+        this.#state = newState;
+    }
+    update() {
+        for(let i = 0; i < _inputManager.InputEnum.SIZE; i++)if (this.#state[i]) this.#inputManager.simulatePress(i);
+    }
+    render(ctx) {
+        ctx.fillStyle = "white";
+        for (const button of this.#buttons)ctx.fillRect(button.x * BUTTON_SIZE, _sharedConstants.GAME_HEIGHT + button.y * BUTTON_SIZE, button.w * BUTTON_SIZE, button.h * BUTTON_SIZE);
+    }
+}
+exports.default = Buttons;
+
+},{"./shared_constants":"ldZyS","../input_manager":"Oqiei","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["7nZVA","8lqZg"], "8lqZg", "parcelRequire7258")
 
 //# sourceMappingURL=index.975ef6c8.js.map
