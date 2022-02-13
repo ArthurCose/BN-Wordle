@@ -1508,8 +1508,7 @@ class RunLine {
         if ((accept || cancel) && this.#progress == 1) this.onExit();
         if (!this.#builtWord && this.#progress == 1) this.#reviewGrid();
     }
-    render(ctx) {
-        ctx.fillStyle = "#ffff0066";
+     #renderLine(ctx) {
         ctx.beginPath();
         const progressWidth = _sharedConstants.GRID_RENDER_SIDE_LEN * this.#progress;
         // to the right
@@ -1521,14 +1520,23 @@ class RunLine {
         ctx.lineTo(_sharedConstants.GRID_RENDER_OFFSET_X + progressWidth, _sharedConstants.GRID_RENDER_OFFSET_Y + _sharedConstants.BLOCK_RENDER_SIDE_LEN * 3);
         ctx.lineTo(_sharedConstants.GRID_RENDER_OFFSET_X, _sharedConstants.GRID_RENDER_OFFSET_Y + _sharedConstants.BLOCK_RENDER_SIDE_LEN * 3);
         ctx.fill();
-        if (this.#progress < 1) ctx.fillStyle = "black";
-        else if (this.#builtWord == this.#word) ctx.fillStyle = this.#validGrid ? "lime" : "orange";
-        else ctx.fillStyle = "red";
+    }
+     #renderText(ctx1, offsetX, offsetY) {
         for(let i = 0; i < _sharedConstants.GRID_BLOCK_SIDE_LEN * this.#progress - 0.5; i++){
             const shape = this.#grid.getShape(i, _sharedConstants.GRID_BLOCK_CENTER);
-            ctx.font = "16px bn6-bold";
-            ctx.fillText(shape ? shape.letter : "?", _sharedConstants.GRID_RENDER_OFFSET_X + _sharedConstants.BLOCK_RENDER_SIDE_LEN * i + 6, _sharedConstants.GRID_RENDER_OFFSET_Y + _sharedConstants.BLOCK_RENDER_SIDE_LEN * _sharedConstants.GRID_BLOCK_CENTER + 3);
+            ctx1.font = "16px bn6-bold";
+            ctx1.fillText(shape ? shape.letter : "?", _sharedConstants.GRID_RENDER_OFFSET_X + _sharedConstants.BLOCK_RENDER_SIDE_LEN * i + 6 + offsetX, _sharedConstants.GRID_RENDER_OFFSET_Y + _sharedConstants.BLOCK_RENDER_SIDE_LEN * _sharedConstants.GRID_BLOCK_CENTER + 3 + offsetY);
         }
+    }
+    render(ctx2) {
+        ctx2.fillStyle = "#ffff0066";
+        this.#renderLine(ctx2);
+        // text shadow
+        this.#renderText(ctx2, 1, 1);
+        if (this.#progress < 1) ctx2.fillStyle = "black";
+        else if (this.#builtWord == this.#word) ctx2.fillStyle = this.#validGrid ? "lime" : "orange";
+        else ctx2.fillStyle = "red";
+        this.#renderText(ctx2, 0, 0);
     }
 }
 exports.default = RunLine;
