@@ -1,0 +1,22 @@
+canvas {
+  max-width: 720px;
+  image-rendering: pixelated;
+  width: 100%;
+}
+
+body {
+  background: black;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-family: bn6-bold;
+  height: 100%;
+}
+
+@font-face {
+  font-family: "bn6-bold";
+  src: url("./assets/BN6FontBold.ttf");
+}

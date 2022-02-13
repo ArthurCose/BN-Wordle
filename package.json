@@ -1,0 +1,19 @@
+{
+  "name": "bn-wordle",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "start": "parcel index.html",
+    "test": "ava"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "ava": "^4.0.1",
+    "parcel": "^2.3.1"
+  },
+  "dependencies": {
+    "array-shuffle": "^3.0.0"
+  }
+}
