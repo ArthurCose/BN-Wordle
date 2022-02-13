@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "parcel index.html",
-    "test": "ava"
+    "test": "ava",
+    "push-dist": "git subtree push --prefix dist origin gh-pages"
   },
   "author": "",
   "license": "ISC",
