@@ -6,13 +6,16 @@
   "scripts": {
     "start": "parcel index.html",
     "test": "ava",
+    "clean": "rimraf dist",
+    "build": "npm run clean && parcel build --public-url ./ index.html",
     "push-dist": "git subtree push --prefix dist origin gh-pages"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "ava": "^4.0.1",
-    "parcel": "^2.3.1"
+    "parcel": "2.8",
+    "rimraf": "^5.0.0"
   },
   "dependencies": {
     "array-shuffle": "^3.0.0"
