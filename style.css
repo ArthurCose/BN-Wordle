@@ -1,6 +1,9 @@
 canvas {
-  max-width: 720px;
   image-rendering: pixelated;
+}
+
+body > * {
+  max-width: 720px;
   width: 100%;
 }
 
@@ -13,7 +16,25 @@ body {
   justify-content: center;
   color: white;
   font-family: bn6-bold;
-  height: 100%;
+  min-height: 100%;
+  font-size: 24px;
+}
+
+footer {
+  margin-top: 32px;
+}
+
+summary {
+  cursor: pointer;
+  user-select: none;
+}
+
+details > *:not(:first-child) {
+  margin-left: 16px;
+}
+
+#word-list {
+  column-width: 128px;
 }
 
 @font-face {

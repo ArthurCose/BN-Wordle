@@ -1,4 +1,5 @@
 import Game from "./ui/game";
+import words from "./words";
 
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
@@ -24,4 +25,9 @@ function gameLoop(time) {
 
 window.addEventListener("load", function () {
   gameLoop(0);
+
+  const sortedList = [...words];
+  sortedList.sort();
+
+  document.getElementById("word-list").innerText = sortedList.join("\n");
 });
