@@ -3,8 +3,7 @@ import {
   INVENTORY_OFFSET_Y,
   BLOCK_RENDER_SIDE_LEN,
   GRID_BLOCK_SIDE_LEN,
-  BORDER_COLOR,
-  GRID_BACKGROUND_COLOR,
+  COLORS,
 } from "./shared_constants";
 import { InputEnum } from "../input_manager";
 import { randomInt } from "../random";
@@ -94,11 +93,11 @@ export default class Inventory {
       const startY = INVENTORY_OFFSET_Y + BLOCK_RENDER_SIDE_LEN * i;
 
       // render border
-      ctx.fillStyle = BORDER_COLOR;
+      ctx.fillStyle = COLORS.BORDER;
       ctx.fillRect(startX - 2, startY - 2, width + 4, height + 4);
 
       // render bg
-      ctx.fillStyle = GRID_BACKGROUND_COLOR;
+      ctx.fillStyle = COLORS.GRID_BACKGROUND;
       ctx.fillRect(startX, startY, width, height);
 
       // render mini shape
@@ -122,7 +121,7 @@ export default class Inventory {
         INVENTORY_OFFSET_Y + BLOCK_RENDER_SIDE_LEN * this.#shapes.length;
 
       // render border
-      ctx.fillStyle = BORDER_COLOR;
+      ctx.fillStyle = COLORS.BORDER;
       ctx.fillRect(startX - 2, startY - 2, width + 4, height + 4);
 
       // render bg
@@ -138,8 +137,8 @@ export default class Inventory {
       const startY =
         INVENTORY_OFFSET_Y + BLOCK_RENDER_SIDE_LEN * this.cursorIndex;
 
-      ctx.strokeStyle = "green";
-      ctx.fillStyle = "lime";
+      ctx.strokeStyle = COLORS.INVENTORY_CURSOR_BORDER;
+      ctx.fillStyle = COLORS.INVENTORY_CURSOR;
       ctx.beginPath();
       ctx.moveTo(startX, startY);
       ctx.lineTo(startX + 8, startY + height / 2);

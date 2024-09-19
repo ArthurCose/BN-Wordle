@@ -13,9 +13,9 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "ava": "^4.0.1",
-    "parcel": "2.8",
-    "rimraf": "^5.0.0"
+    "ava": "^6.1",
+    "parcel": "^2.12",
+    "rimraf": "^6"
   },
   "dependencies": {
     "array-shuffle": "^3.0.0"

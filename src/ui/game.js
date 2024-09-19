@@ -2,7 +2,7 @@ import Grid from "./grid";
 import Inventory from "./inventory";
 import RunLine from "./run_line";
 import Buttons from "./buttons";
-import { GRID_BLOCK_SIDE_LEN, GAME_HEIGHT } from "./shared_constants";
+import { GRID_BLOCK_SIDE_LEN, GAME_HEIGHT, COLORS } from "./shared_constants";
 import { InputManager } from "../input_manager";
 import { randomItem } from "../random";
 import { generateWordShapes } from "../generation";
@@ -93,7 +93,7 @@ export default class Game {
       this.#buttons.render(ctx);
     }
 
-    ctx.fillStyle = "orange";
+    ctx.fillStyle = COLORS.BOARD;
     ctx.fillRect(0, 0, canvas.width, GAME_HEIGHT);
 
     this.#grid.render(ctx);

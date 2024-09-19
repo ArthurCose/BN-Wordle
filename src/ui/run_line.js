@@ -6,6 +6,7 @@ import {
   GRID_RENDER_OFFSET_Y,
   GRID_BLOCK_SIDE_LEN,
   GRID_BLOCK_CENTER,
+  COLORS,
 } from "./shared_constants";
 
 export default class RunLine {
@@ -117,17 +118,30 @@ export default class RunLine {
 
     this.#renderLine(ctx);
 
-    // text shadow
-    this.#renderText(ctx, 1, 1);
-
+    let text_color;
     if (this.#progress < 1) {
-      ctx.fillStyle = "black";
+      text_color = COLORS.PROCESSING_LETTER;
     } else if (this.#builtWord == this.#word) {
-      ctx.fillStyle = this.#validGrid ? "lime" : "orange";
+      text_color = this.#validGrid
+        ? COLORS.CORRECT_LETTER
+        : COLORS.INVALID_LETTER;
     } else {
-      ctx.fillStyle = "red";
+      text_color = COLORS.INCORRECT_LETTER;
     }
 
+    // text shadow
+    ctx.fillStyle = text_color;
+    ctx.globalAlpha = 0.5;
+    this.#renderText(ctx, 1, 1);
+
+    // darken shadow
+    ctx.fillStyle = "black";
+    ctx.globalAlpha = 0.5;
+    this.#renderText(ctx, 1, 1);
+
+    // draw text
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = text_color;
     this.#renderText(ctx, 0, 0);
   }
 }

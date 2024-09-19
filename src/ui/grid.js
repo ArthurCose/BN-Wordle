@@ -5,7 +5,7 @@ import {
   GRID_RENDER_SIDE_LEN,
   GRID_RENDER_OFFSET_X,
   GRID_RENDER_OFFSET_Y,
-  BORDER_COLOR,
+  COLORS,
 } from "./shared_constants";
 
 const GRID_BORDER_SIZE = 6;
@@ -217,7 +217,7 @@ export default class Grid {
 
   render(ctx) {
     // border
-    ctx.fillStyle = BORDER_COLOR;
+    ctx.fillStyle = COLORS.BORDER;
     ctx.fillRect(
       GRID_RENDER_OFFSET_X - GRID_BORDER_SIZE,
       GRID_RENDER_OFFSET_Y - GRID_BORDER_SIZE,
@@ -226,7 +226,7 @@ export default class Grid {
     );
 
     // background
-    ctx.fillStyle = "#124D7F";
+    ctx.fillStyle = COLORS.GRID_BACKGROUND;
     ctx.fillRect(
       GRID_RENDER_OFFSET_X,
       GRID_RENDER_OFFSET_Y,
@@ -264,7 +264,7 @@ export default class Grid {
       }
     }
 
-    ctx.fillStyle = "#00000033";
+    ctx.fillStyle = COLORS.LINE_SHADOW;
     ctx.beginPath();
     // to the right
     ctx.moveTo(
@@ -298,7 +298,7 @@ export default class Grid {
     // draw cursor
     if (this.#hasFocus) {
       const { x, y } = this.cursorPos;
-      ctx.strokeStyle = "#E02828";
+      ctx.strokeStyle = COLORS.GRID_CURSOR;
 
       ctx.strokeRect(
         GRID_RENDER_OFFSET_X + BLOCK_RENDER_SIDE_LEN * x + 0.5,
@@ -307,9 +307,11 @@ export default class Grid {
         BLOCK_RENDER_SIDE_LEN - 1
       );
 
+      // draw shape letter
       const shape = this.getShape(x, y);
 
       if (!this.#selectedShape && shape) {
+        ctx.fillStyle = COLORS.GRID_CURSOR_LETTER;
         ctx.font = "16px bn6-bold";
         ctx.textBaseline = "top";
         ctx.fillText(

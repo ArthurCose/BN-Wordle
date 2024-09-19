@@ -13,5 +13,21 @@ export const INVENTORY_OFFSET_X =
   GRID_RENDER_OFFSET_X + GRID_RENDER_SIDE_LEN + BLOCK_RENDER_SIDE_LEN;
 export const INVENTORY_OFFSET_Y = GRID_RENDER_OFFSET_Y;
 
-export const BORDER_COLOR = "#889EB3";
-export const GRID_BACKGROUND_COLOR = "#124D7F";
+export const COLORS = {
+  // shared
+  BOARD: "darkorange",
+  BORDER: "#889EB3",
+  // grid
+  GRID_BACKGROUND: "#124D7F",
+  GRID_CURSOR: "lime",
+  GRID_CURSOR_LETTER: "#0006",
+  LINE_SHADOW: "#00000033",
+  // line
+  PROCESSING_LETTER: "WHITE",
+  CORRECT_LETTER: "lime",
+  INCORRECT_LETTER: "red",
+  INVALID_LETTER: "orange",
+  // inventory
+  INVENTORY_CURSOR_BORDER: "green",
+  INVENTORY_CURSOR: "lime",
+};
